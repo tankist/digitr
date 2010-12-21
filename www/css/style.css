@@ -14,13 +14,37 @@ ul#digits {
 	font-weight:bold;
 	}
 	ul#digits li {
-		display:block;
-		float:left;
-		width:39px;
-		line-height:40px;
-		padding:5px;
 		border:1px solid gray;
 		border-left:none;
 		border-top:none;
+		cursor:pointer;
+		display:block;
+		float:left;
+		height:50px;
+		line-height:49px;
+		overflow:hidden;
+		position:relative;
 		text-align:center;
-	}
+		width:49px;
+		}
+		ul#digits li.empty {
+			background-color:#AAA;
+			}
+			ul#digits li.empty span {
+				border:none;
+				}
+		ul#digits li span {
+			display:block;
+			height:50px;
+			overflow:hidden;
+			position:absolute;
+			width:49px;
+			-moz-user-select:none;
+			-webkit-user-select:none;
+			}
+			ul#digits li.selected span {
+				border:1px solid red;
+				width:47px;
+				height:48px;
+				}
+			
