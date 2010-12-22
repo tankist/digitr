@@ -116,7 +116,7 @@ var digitr = (function() {
             }
         },
 		collapse : function(selectedElements) {
-			//if (Array.prototype.isDigitrs.apply(digits, selectedElements)) {
+			if (Array.prototype.isDigitrs.apply(digits, selectedElements)) {
 				for (var i=0;i<selectedElements.length;i++) {
 					var pos = selectedElements[i];
 					digits[pos] = -1;
@@ -126,7 +126,7 @@ var digitr = (function() {
 					data : selectedElements
 				}));
 				return true;
-			//}
+			}
 			return false;
 		},
 		afterCollapse : function(data) {
