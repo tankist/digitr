@@ -14,6 +14,9 @@ Array.prototype.renderDigitr = function() {
 };
 
 Array.prototype.updateDigitr = function() {
+	
+	this.emptyRows = 0;
+	
 	var _filter = function(element) {
 		return (element >= 0);
 	};
@@ -22,6 +25,7 @@ Array.prototype.updateDigitr = function() {
 		var _rowStart = i * ELEMENTS_PER_ROW;
 		if (this.slice(_rowStart, _rowStart + ELEMENTS_PER_ROW - 1).filter(_filter).length == 0) {
 			this.splice(_rowStart, ELEMENTS_PER_ROW);
+			this.emptyRows++;
 		}
 	}
 	Array.prototype.splice.apply(this, [this.length, 0].concat(this.filter(_filter)));

@@ -143,7 +143,7 @@ var digitr = (function() {
 }());
 
 $(function() {
-    var socket = new io.Socket('localhost', {
+    var socket = new io.Socket('srv.digitr.lan', {
             port : 7979
     });
     digitr.setClient(socket);
@@ -152,6 +152,14 @@ $(function() {
 		var methodData = JSON.parse(data) || {};
         if (!!methodData.method && digitr[methodData.method]) {
             digitr[methodData.method](methodData.data);
+        }
+    });
+	
+	socket.on('message', function(data){
+		var methodData = JSON.parse(data) || {};
+        if (methodData.data.score) {
+		var score = parseInt(methodData.data.score) || 0;
+            $('#score').text(score);
         }
     });
     

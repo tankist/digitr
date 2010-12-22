@@ -49,3 +49,11 @@ ul#digits {
 				height:48px;
 				}
 			
+#scores {
+	position: fixed;
+	right: 50px;
+	top: 0;
+	}
+	#scores strong {
+		font-weight: bold;
+	}
