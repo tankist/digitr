@@ -87,7 +87,7 @@ function initDigitr(start) {
 	} while (digitsStr.length < INITIAL_DIGITS_COUNT);
 	digitsStr = digitsStr.substr(0, INITIAL_DIGITS_COUNT);
 	return Array.prototype.map.call(digitsStr, function(element) { return element * 1; });
-};
+}
 
 $(function() {
 	var digits = initDigitr();
@@ -132,4 +132,15 @@ $(function() {
 		});
 		
 	}());
+});
+
+$(function() {
+	socket = new io.Socket('localhost', {
+		port : 7979
+	});
+	socket.connect();
+	socket.send('some data');
+	socket.on('message', function(data){
+		alert('got some data' + data);
+	});
 });
