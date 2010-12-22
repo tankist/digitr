@@ -65,12 +65,12 @@ Array.prototype.isDigitrs = function(pos1, pos2) {
 	if (d1 != d2 && d1+d2 != 10) return false;
 	//Not neighboors
 	if (col1 == col2) {
-		for (var i=row1+1;i<row2;i++) {
+		for (var i=Math.min(row1, row2)+1;i<Math.max(row1, row2);i++) {
 			if (this[i * ELEMENTS_PER_ROW + col1] >=0) return false;
 		}
 	}
 	if (row1 == row2) {
-		for (var i=col1+1;i<col2;i++) {
+		for (var i=Math.min(col1, col2)+1;i<Math.max(col1, col2);i++) {
 			if (this[row1 * ELEMENTS_PER_ROW + i] >=0) return false;
 		}
 	}
