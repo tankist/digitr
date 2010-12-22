@@ -89,14 +89,81 @@ function initDigitr(start) {
 	return Array.prototype.map.call(digitsStr, function(element) {return element * 1;});
 }
 
+var digitr = (function() {
+    
+    var digits = [], client;
+    
+    return {
+        init : function(data) {
+            if (!!data && data.digits) {
+                digits = data.digits;
+            }
+            digits.renderDigitr();
+        },
+        getDigits : function() {
+            return digits;
+        },
+        setClient : function(c) {
+            client = c;
+        },
+        getClient : function() {
+            return client;
+        },
+        error : function(data) {
+			if (!!data && data.digits) {
+                digits = data.digits;
+				digits.renderDigitr();
+            }
+        },
+		collapse : function(selectedElements) {
+			//if (Array.prototype.isDigitrs.apply(digits, selectedElements)) {
+				for (var i=0;i<selectedElements.length;i++) {
+					var pos = selectedElements[i];
+					digits[pos] = -1;
+				}
+				client.send(JSON.stringify({
+					method : 'collapse',
+					data : selectedElements
+				}));
+				return true;
+			//}
+			return false;
+		},
+		afterCollapse : function(data) {
+			var selectedElements = data.selectedElements || [];
+			$('#digits li.selected span').animate({
+				opacity : 0
+			}, 300, '', function() {
+				for (var i=0;i<selectedElements.length;i++) {
+					$('#digits li:nth-child(' + (selectedElements[i] + 1) + ')').removeClass('selected').addClass('empty').html('&nbsp');
+				}
+			});
+		}
+    };
+}());
+
 $(function() {
-	$('a#update').click(function(e) {
-		digits.updateDigitr().renderDigitr();
-		e.preventDefault();
-	});
-	
-	(function() {
-		
+    var socket = new io.Socket('localhost', {
+            port : 7979
+    });
+    digitr.setClient(socket);
+    socket.connect();
+    socket.on('message', function(data){
+		var methodData = JSON.parse(data) || {};
+        if (!!methodData.method && digitr[methodData.method]) {
+            digitr[methodData.method](methodData.data);
+        }
+    });
+    
+    $('a#update').click(function(e) {
+        digitr.getDigits().updateDigitr().renderDigitr();
+		socket.send(JSON.stringify({
+			method : 'update'
+		}))
+        e.preventDefault();
+    });
+    
+    (function() {
 		var selectedElements = [];
 		$('#digits').delegate('li', 'click', function(e) {
 			e.preventDefault();
@@ -105,18 +172,8 @@ $(function() {
 			var pos = $this.addClass('selected').index();
 			selectedElements.push(pos);
 			if (selectedElements.length == 2) {
-				if (Array.prototype.isDigitrs.apply(digits, selectedElements)) {
-					var _ar = selectedElements;
+				if (digitr.collapse(selectedElements)) {
 					selectedElements = [];
-					$('#digits li.selected span').animate({
-						opacity : 0
-					}, 300, '', function() {
-						for (var i=0;i<_ar.length;i++) {
-							var pos = _ar[i];
-							digits[pos] = -1;
-							$('#digits li:nth-child(' + (pos + 1) + ')').removeClass('selected').addClass('empty').html('&nbsp');
-						}
-					});
 				}
 				else {
 					if ($('#digits li.selected').length == 1) {
@@ -129,41 +186,4 @@ $(function() {
 		});
 		
 	}());
-});
-
-var digitr = (function() {
-    
-    var digits = [], client;
-    
-    return {
-        init : function(data) {
-            if (data.digits) {
-                digits = data.digits;
-            }
-            digits.renderDigitr();
-        },
-        getDigits : function() {
-            return digits;
-        },
-        setClient : function(client) {
-            client = client;
-        },
-        getClient : function() {
-            return client;
-        }
-    };
-}());
-
-$(function() {
-    var socket = new io.Socket('localhost', {
-            port : 7979
-    });
-    digitr.setClient(socket);
-    socket.connect();
-    socket.on('message', function(data){
-        var methodData = JSON.parse(data) || {};
-        if (!!methodData.method && digitr[methodData.method]) {
-            digitr[methodData.method](methodData.data);
-        }
-    });
 });

@@ -29,6 +29,7 @@ ul#digits {
 		}
 		ul#digits li.empty {
 			background-color:#AAA;
+			cursor:default;
 			}
 			ul#digits li.empty span {
 				border:none;
