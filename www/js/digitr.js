@@ -109,15 +109,16 @@ $(function() {
 			selectedElements.push(pos);
 			if (selectedElements.length == 2) {
 				if (Array.prototype.isDigitrs.apply(digits, selectedElements)) {
+					var _ar = selectedElements;
+					selectedElements = [];
 					$('#digits li.selected span').animate({
 						opacity : 0
 					}, 300, '', function() {
-						for (var i=0;i<selectedElements.length;i++) {
-							var pos = selectedElements[i];
+						for (var i=0;i<_ar.length;i++) {
+							var pos = _ar[i];
 							digits[pos] = -1;
 							$('#digits li:nth-child(' + (pos + 1) + ')').removeClass('selected').addClass('empty').html('&nbsp');
 						}
-						selectedElements = [];
 					});
 				}
 				else {
