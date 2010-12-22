@@ -4,31 +4,6 @@ Math.randomRange = function(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
 };
 
-/*Array.prototype.indexOf = Array.prototype.indexOf || function(element) {
-	for (var i=0;i<this.length;i++) {
-		if (this[i] == element) return i;
-	}
-	return -1;
-};
-
-Array.prototype.map = Array.prototype.map || function(cb) {
-	for (var i=0;i<this.length;i++) {
-		this[i] = cb(this[i]);
-	}
-	return this;
-};
-
-Array.prototype.filter = Array.prototype.filter || function(cb) {
-	cb = (cb && typeof cb === 'function') ? cb : function(element) {
-		return (!!element);
-	};
-	var newArray = [];
-	for (var i=0;i<this.length;i++) {
-		if (cb(this[i])) newArray.push(this[i]);
-	}
-	return newArray;
-};*/
-
 Array.prototype.renderDigitr = function() {
 	var ul = '';
 	for(var i=0;i<this.length;i++) {
