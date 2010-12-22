@@ -56,7 +56,7 @@ Array.prototype.updateDigitr = function() {
 Array.prototype.isDigitrs = function(pos1, pos2) {
 	var d1 = this[pos1], d2 = this[pos2],
 		row1 = Math.floor(pos1 / ELEMENTS_PER_ROW), row2 = Math.floor(pos2 / ELEMENTS_PER_ROW),
-		col1 = pos1 % ELEMENTS_PER_ROW, col2 = pos2 % ELEMENTS_PER_ROW;
+		col1 = pos1 % ELEMENTS_PER_ROW, col2 = pos2 % ELEMENTS_PER_ROW, i;
 	//Same element
 	if (pos1 === pos2) return false;
 	//Not in one column/row
@@ -65,12 +65,12 @@ Array.prototype.isDigitrs = function(pos1, pos2) {
 	if (d1 != d2 && d1+d2 != 10) return false;
 	//Not neighboors
 	if (col1 == col2) {
-		for (var i=Math.min(row1, row2)+1;i<Math.max(row1, row2);i++) {
+		for (i=Math.min(row1, row2)+1;i<Math.max(row1, row2);i++) {
 			if (this[i * ELEMENTS_PER_ROW + col1] >=0) return false;
 		}
 	}
 	if (row1 == row2) {
-		for (var i=Math.min(col1, col2)+1;i<Math.max(col1, col2);i++) {
+		for (i=Math.min(col1, col2)+1;i<Math.max(col1, col2);i++) {
 			if (this[row1 * ELEMENTS_PER_ROW + i] >=0) return false;
 		}
 	}
@@ -86,13 +86,10 @@ function initDigitr(start) {
 		start++;
 	} while (digitsStr.length < INITIAL_DIGITS_COUNT);
 	digitsStr = digitsStr.substr(0, INITIAL_DIGITS_COUNT);
-	return Array.prototype.map.call(digitsStr, function(element) { return element * 1; });
+	return Array.prototype.map.call(digitsStr, function(element) {return element * 1;});
 }
 
 $(function() {
-	var digits = initDigitr();
-	digits.renderDigitr();
-	
 	$('a#update').click(function(e) {
 		digits.updateDigitr().renderDigitr();
 		e.preventDefault();
@@ -134,13 +131,39 @@ $(function() {
 	}());
 });
 
+var digitr = (function() {
+    
+    var digits = [], client;
+    
+    return {
+        init : function(data) {
+            if (data.digits) {
+                digits = data.digits;
+            }
+            digits.renderDigitr();
+        },
+        getDigits : function() {
+            return digits;
+        },
+        setClient : function(client) {
+            client = client;
+        },
+        getClient : function() {
+            return client;
+        }
+    };
+}());
+
 $(function() {
-	socket = new io.Socket('localhost', {
-		port : 7979
-	});
-	socket.connect();
-	socket.send('some data');
-	socket.on('message', function(data){
-		alert('got some data' + data);
-	});
+    var socket = new io.Socket('localhost', {
+            port : 7979
+    });
+    digitr.setClient(socket);
+    socket.connect();
+    socket.on('message', function(data){
+        var methodData = JSON.parse(data) || {};
+        if (!!methodData.method && digitr[methodData.method]) {
+            digitr[methodData.method](methodData.data);
+        }
+    });
 });
