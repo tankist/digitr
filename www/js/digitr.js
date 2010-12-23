@@ -45,7 +45,7 @@ Array.prototype.updateDigitr = function() {
 	var rowsCount = Math.ceil(this.length / ELEMENTS_PER_ROW);
 	for (var i=rowsCount - 1;i>=0;i--) {
 		var _rowStart = i * ELEMENTS_PER_ROW;
-		if (this.slice(_rowStart, _rowStart + ELEMENTS_PER_ROW - 1).filter(_filter).length == 0) {
+		if (this.slice(_rowStart, _rowStart + ELEMENTS_PER_ROW).filter(_filter).length == 0) {
 			this.splice(_rowStart, ELEMENTS_PER_ROW);
 		}
 	}
