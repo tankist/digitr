@@ -31,7 +31,6 @@ server.listen(7979);
 			if (!!methodData.method && digitrInstance[methodData.method]) {
 				digitrInstance[methodData.method](methodData.data);
 			}
-			console.log('Current score is: ' + digitrInstance.getScore());
 		});
 		client.on('disconnect', function() {
 			

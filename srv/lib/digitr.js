@@ -64,7 +64,7 @@ var initDigitr = exports.initDigitr = function(start) {
 
 var digitrFactory = exports.digitrFactory = function() {
 
-	var clientInstance, score = 0, digits = [];
+	var client, score = 0, digits = [];
 
 	return {
 		init : function(start) {
@@ -83,11 +83,11 @@ var digitrFactory = exports.digitrFactory = function() {
 			if (digits) {
 				c.digits = digits;
 			}
-			clientInstance = c;
+			client = c;
 			return this;
 		},
 		getClient : function() {
-			return clientInstance;
+			return client;
 		},
 		error : function(e, data) {
 
@@ -96,7 +96,7 @@ var digitrFactory = exports.digitrFactory = function() {
 			if (!selectedElements || 
 				selectedElements.length != 2 ||
 				!Array.prototype.isDigitrs.apply(digits, selectedElements)) {
-				clientInstance.send(JSON.stringify({
+				client.send(JSON.stringify({
 					method : 'error',
 					data : {
 						digits : digits
@@ -115,7 +115,7 @@ var digitrFactory = exports.digitrFactory = function() {
 					digits[selectedElements[i]] = -1;
 				}
 
-				clientInstance.send(JSON.stringify({
+				client.send(JSON.stringify({
 					method : 'afterCollapse',
 					data : {
 						selectedElements : selectedElements,
@@ -128,7 +128,7 @@ var digitrFactory = exports.digitrFactory = function() {
 		update : function() {
 			digits.updateDigitr();
 			score += 0.5 * (digits.emptyRows - 1) * score;
-			clientInstance.send(JSON.stringify({
+			client.send(JSON.stringify({
 				method : 'update',
 				data : {
 					score : score

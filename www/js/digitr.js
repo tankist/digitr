@@ -133,7 +133,7 @@ var digitr = (function() {
 			var selectedElements = data.selectedElements || [];
 			$('#digits li.selected span').animate({
 				opacity : 0
-			}, 300, '', function() {
+			}, 100, '', function() {
 				for (var i=0;i<selectedElements.length;i++) {
 					$('#digits li:nth-child(' + (selectedElements[i] + 1) + ')').removeClass('selected').addClass('empty').html('&nbsp');
 				}
