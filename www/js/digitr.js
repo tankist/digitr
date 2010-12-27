@@ -143,7 +143,7 @@ var digitr = (function() {
 }());
 
 $(function() {
-    var socket = new io.Socket('srv.digitr.lan', {
+    var socket = new io.Socket('localhost', {
             port : 7979
     });
     digitr.setClient(socket);
