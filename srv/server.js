@@ -14,7 +14,7 @@ server.listen(7979);
 
 (function() {
 	console.log('Client started');
-	var socket = io.listen(server);
+	var socket = digitr.listen(server);
 	var connectionsPool = [];
 	
 	socket.on('connection', function(client){
@@ -105,7 +105,7 @@ server.listen(7979);
 			console.log('Current score is: ' + digitrInstance.getScore());
 		});
 		client.on('disconnect', function() {
-
+			
 		});
 	});
 })();

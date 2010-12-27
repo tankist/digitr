@@ -1,16 +1,10 @@
+var util = require(process.binding('natives').util ? 'util' : 'sys'),
+	io = require('socket.io');
+
 var ELEMENTS_PER_ROW = 9, ROWS_COUNT = 3, INITIAL_DIGITS_COUNT = ELEMENTS_PER_ROW * ROWS_COUNT;
 
 Math.randomRange = function(min, max) {
     return Math.floor(Math.random() * (max - min) + min);
-};
-
-Array.prototype.renderDigitr = function() {
-	var ul = '';
-	for(var i=0;i<this.length;i++) {
-		ul += '<li' + ((this[i] < 0)?' class="empty"':'') + ' unselectable="on"><span>' + ((this[i] < 0)?'&nbsp;':this[i]) + '</span></li>';
-	}
-	$('#digits').html(ul);
-	return this;
 };
 
 Array.prototype.updateDigitr = function() {
@@ -65,7 +59,27 @@ function initDigitr(start) {
 		start++;
 	} while (digitsStr.length < INITIAL_DIGITS_COUNT);
 	digitsStr = digitsStr.substr(0, INITIAL_DIGITS_COUNT);
-	return Array.prototype.map.call(digitsStr, function(element) { return element * 1; });
+	return Array.prototype.map.call(digitsStr, function(element) {return element * 1;});
 }
 
+var DigitrListener = exports.DigitrListener = function(server, options) {
+	io.Listener.call(this, server, options);
+	if ('digitr' in (options || {})) {
+		this.setDigitr(options.digitr);
+	}
+};
+
+util.inherits(DigitrListener, io.Listener);
+
+DigitrListener.prototype.setDigitr = function(digitr) {
+	if (!('isDigitrs' in digitr)) {
+		throw new Error('No Digitr instance was provided');
+	}
+	this._digitr = digitr;
+};
+
 exports.initDigitr = initDigitr;
+
+exports.listen = function(server, options){
+	return new exports.DigitrListener(server, options);
+};
