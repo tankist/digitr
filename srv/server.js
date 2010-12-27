@@ -16,16 +16,12 @@ server.listen(7979);
 	var socket = io.listen(server);
 	
 	socket.on('connection', function(client){
-		
-		var digits = digitr.initDigitr();
-		var digitrInstance = digitr.digitrFactory();
-		digitrInstance.setClient(client);
-		client.digits = digits;
+		var digitrInstance = digitr.digitrFactory().init().setClient(client);
 
 		client.send(JSON.stringify({
 			method : 'init',
 			data : {
-				digits : digits,
+				digits : digitrInstance.getDigits(),
 				score : digitrInstance.getScore()
 			}
 		}));

@@ -64,14 +64,27 @@ var initDigitr = exports.initDigitr = function(start) {
 
 var digitrFactory = exports.digitrFactory = function() {
 
-	var clientInstance, score = 0;
+	var clientInstance, score = 0, digits = [];
 
 	return {
-		init : function() {
-
+		init : function(start) {
+			start = (!start || start < 11)?Math.randomRange(11, 99):start;
+			var digitsStr = '';
+			do {
+				digitsStr += start.toString();
+				digitsStr = digitsStr.replace(/[^1-9]+/, '');
+				start++;
+			} while (digitsStr.length < INITIAL_DIGITS_COUNT);
+			digitsStr = digitsStr.substr(0, INITIAL_DIGITS_COUNT);
+			digits = Array.prototype.map.call(digitsStr, function(element) {return element * 1;});
+			return this;
 		},
 		setClient : function(c) {
+			if (digits) {
+				c.digits = digits;
+			}
 			clientInstance = c;
+			return this;
 		},
 		getClient : function() {
 			return clientInstance;
@@ -110,6 +123,7 @@ var digitrFactory = exports.digitrFactory = function() {
 					}
 				}));
 			}
+			return this;
 		},
 		update : function() {
 			digits.updateDigitr();
@@ -120,9 +134,13 @@ var digitrFactory = exports.digitrFactory = function() {
 					score : score
 				}
 			}));
+			return this;
 		},
 		getScore : function() {
 			return score;
+		},
+		getDigits : function() {
+			return digits;
 		}
 	};
 };
