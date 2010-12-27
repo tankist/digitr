@@ -13,81 +13,14 @@ var server = http.createServer(function(req, res){
 server.listen(7979);
 
 (function() {
-	console.log('Client started');
-	var socket = digitr.listen(server);
-	var connectionsPool = [];
+	var socket = io.listen(server);
 	
 	socket.on('connection', function(client){
-		console.log('Client connected');
 		
 		var digits = digitr.initDigitr();
-
-		var digitrInstance = (function() {
-
-			var clientInstance, score = 0;
-
-			return {
-				init : function(data) {
-
-				},
-				setClient : function(c) {
-					clientInstance = c;
-				},
-				getClient : function() {
-					return clientInstance;
-				},
-				error : function(e, data) {
-
-				},
-				collapse : function(selectedElements) {
-					if (!selectedElements || 
-						selectedElements.length != 2 ||
-						!Array.prototype.isDigitrs.apply(digits, selectedElements)) {
-						clientInstance.send(JSON.stringify({
-							method : 'error',
-							data : {
-								digits : digits
-							}
-						}));
-					}
-					else {
-						var range = Math.abs(selectedElements[0] - selectedElements[1]),
-							rowsRange = Math.floor(range / ELEMENTS_PER_ROW);
-						if (rowsRange == 0) {
-							rowsRange = range;
-						}
-
-						score += (digits[selectedElements[0]] + digits[selectedElements[1]]) * rowsRange;
-						for (var i=0;i<selectedElements.length;i++) {
-							digits[selectedElements[i]] = -1;
-						}
-
-						clientInstance.send(JSON.stringify({
-							method : 'afterCollapse',
-							data : {
-								selectedElements : selectedElements,
-								score : score
-							}
-						}));
-					}
-				},
-				update : function() {
-					digits.updateDigitr();
-					score += 0.5 * (digits.emptyRows - 1) * score;
-					clientInstance.send(JSON.stringify({
-						method : 'update',
-						data : {
-							score : score
-						}
-					}));
-				},
-				getScore : function() {
-					return score;
-				}
-			};
-		}());
-
+		var digitrInstance = digitr.digitrFactory();
 		digitrInstance.setClient(client);
+		client.digits = digits;
 
 		client.send(JSON.stringify({
 			method : 'init',

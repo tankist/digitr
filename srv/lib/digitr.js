@@ -50,7 +50,7 @@ Array.prototype.isDigitrs = function(pos1, pos2) {
 	return true;
 };
 
-function initDigitr(start) {
+var initDigitr = exports.initDigitr = function(start) {
 	start = (!start || start < 11)?Math.randomRange(11, 99):start;
 	var digitsStr = '';
 	do {
@@ -60,26 +60,69 @@ function initDigitr(start) {
 	} while (digitsStr.length < INITIAL_DIGITS_COUNT);
 	digitsStr = digitsStr.substr(0, INITIAL_DIGITS_COUNT);
 	return Array.prototype.map.call(digitsStr, function(element) {return element * 1;});
-}
-
-var DigitrListener = exports.DigitrListener = function(server, options) {
-	io.Listener.call(this, server, options);
-	if ('digitr' in (options || {})) {
-		this.setDigitr(options.digitr);
-	}
 };
 
-util.inherits(DigitrListener, io.Listener);
+var digitrFactory = exports.digitrFactory = function() {
 
-DigitrListener.prototype.setDigitr = function(digitr) {
-	if (!('isDigitrs' in digitr)) {
-		throw new Error('No Digitr instance was provided');
-	}
-	this._digitr = digitr;
-};
+	var clientInstance, score = 0;
 
-exports.initDigitr = initDigitr;
+	return {
+		init : function() {
 
-exports.listen = function(server, options){
-	return new exports.DigitrListener(server, options);
+		},
+		setClient : function(c) {
+			clientInstance = c;
+		},
+		getClient : function() {
+			return clientInstance;
+		},
+		error : function(e, data) {
+
+		},
+		collapse : function(selectedElements) {
+			if (!selectedElements || 
+				selectedElements.length != 2 ||
+				!Array.prototype.isDigitrs.apply(digits, selectedElements)) {
+				clientInstance.send(JSON.stringify({
+					method : 'error',
+					data : {
+						digits : digits
+					}
+				}));
+			}
+			else {
+				var range = Math.abs(selectedElements[0] - selectedElements[1]),
+					rowsRange = Math.floor(range / ELEMENTS_PER_ROW);
+				if (rowsRange == 0) {
+					rowsRange = range;
+				}
+
+				score += (digits[selectedElements[0]] + digits[selectedElements[1]]) * rowsRange;
+				for (var i=0;i<selectedElements.length;i++) {
+					digits[selectedElements[i]] = -1;
+				}
+
+				clientInstance.send(JSON.stringify({
+					method : 'afterCollapse',
+					data : {
+						selectedElements : selectedElements,
+						score : score
+					}
+				}));
+			}
+		},
+		update : function() {
+			digits.updateDigitr();
+			score += 0.5 * (digits.emptyRows - 1) * score;
+			clientInstance.send(JSON.stringify({
+				method : 'update',
+				data : {
+					score : score
+				}
+			}));
+		},
+		getScore : function() {
+			return score;
+		}
+	};
 };
